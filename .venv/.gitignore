@@ -1,0 +1,31 @@
+# --- Python & Virtual Environments ---
+venv/
+env/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# --- Environment Variables (CRITICAL) ---
+.env
+.env.local
+.env.development
+.env.test
+
+# --- IDE & OS Files ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Logs & Uploads ---
+*.log
+logs/
+uploads/
+media/
+
+# --- Data Files ---
+*.xlsx
+*.xls
+*.csv

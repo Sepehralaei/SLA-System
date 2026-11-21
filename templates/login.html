@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SLA | Sign In</title>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --background: #f3f6fb;
+            --card: #ffffff;
+            --text-main: #172033;
+            --text-muted: #718096;
+            --border: #dce3ee;
+            --input-bg: #f9fbfe;
+            --danger: #dc2626;
+        }
+
+        .login-error {
+            margin: 14px 0;
+            padding: 11px 14px;
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+            background-color: #fef2f2;
+            color: #b91c1c;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: left;
+        }
+
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background:
+                radial-gradient(circle at top left, #dbeafe 0%, transparent 35%),
+                radial-gradient(circle at bottom right, #e0e7ff 0%, transparent 30%),
+                var(--background);
+            color: var(--text-main);
+        }
+
+        .auth-wrapper {
+            width: 100%;
+            max-width: 800px;
+            min-height: 560px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            overflow: hidden;
+            border: 1px solid rgba(220, 227, 238, 0.9);
+            border-radius: 22px;
+            background-color: var(--card);
+            box-shadow: 0 22px 55px rgba(32, 53, 88, 0.16);
+        }
+
+        /* Left side */
+        .brand-panel {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 52px;
+            overflow: hidden;
+            color: #ffffff;
+            background: linear-gradient(145deg, #1d4ed8, #1e40af 58%, #2563eb);
+        }
+
+        .brand-panel::before,
+        .brand-panel::after {
+            position: absolute;
+            border-radius: 50%;
+            content: "";
+            opacity: 0.16;
+            background: #ffffff;
+        }
+
+        .brand-panel::before {
+            width: 340px;
+            height: 340px;
+            top: -170px;
+            right: -120px;
+        }
+
+        .brand-panel::after {
+            width: 260px;
+            height: 260px;
+            bottom: -150px;
+            left: -100px;
+        }
+
+        .brand-content,
+        .brand-footer {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: 750;
+            letter-spacing: 0.4px;
+        }
+
+        /*.logo-icon {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 10px;
+            font-size: 18px;
+            background: rgba(255, 255, 255, 0.14);
+        }*/
+
+        .brand-title {
+            max-width: 330px;
+            margin-top: 92px;
+            font-size: 38px;
+            line-height: 1.2;
+            letter-spacing: -0.8px;
+        }
+
+        .brand-description {
+            max-width: 330px;
+            margin-top: 18px;
+            color: rgba(255, 255, 255, 0.78);
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        .brand-footer {
+            color: rgba(255, 255, 255, 0.63);
+            font-size: 13px;
+        }
+
+        /* Right side */
+        .form-panel {
+            display: flex;
+            align-items: center;
+            padding: 52px 58px;
+            background: #ffffff;
+        }
+
+        .form-content {
+            width: 100%;
+        }
+
+        .form-title {
+            font-size: 30px;
+            font-weight: 750;
+            letter-spacing: -0.6px;
+        }
+
+        .form-subtitle {
+            margin-top: 10px;
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        form {
+            margin-top: 34px;
+        }
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+        .field-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        label {
+            color: #344054;
+            font-size: 13px;
+            font-weight: 650;
+        }
+
+        input {
+            width: 100%;
+            height: 48px;
+            padding: 0 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            outline: none;
+            color: var(--text-main);
+            font-size: 14px;
+            background: var(--input-bg);
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+
+        input::placeholder {
+            color: #a0aec0;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+        }
+
+        .forgot-link {
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 650;
+            text-decoration: none;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+
+        .sign-in-button {
+            width: 100%;
+            height: 50px;
+            margin-top: 8px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+            background: var(--primary);
+            transition: transform 0.18s, background 0.18s, box-shadow 0.18s;
+        }
+
+        .sign-in-button:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 28px 0;
+            color: #98a2b3;
+            font-size: 12px;
+        }
+
+        .divider::before,
+        .divider::after {
+            flex: 1;
+            height: 1px;
+            content: "";
+            background: #e5eaf1;
+        }
+
+        .register-box {
+            padding: 16px;
+            border: 1px solid #e3eaf5;
+            border-radius: 12px;
+            background: #f8faff;
+            text-align: center;
+        }
+
+        .register-box p {
+            margin-bottom: 12px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .create-account-button {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    background: var(--primary);
+    transition: transform 0.18s, background 0.18s, box-shadow 0.18s;
+    text-align: center;
+}
+
+
+        .create-account-button:hover {
+    background: var(--primary-dark);
+    box-shadow: 0 10px 20px rgba(37, 99, 235, 0.25);
+    transform: translateY(-1px);
+}
+
+
+        .form-footer {
+            margin-top: 22px;
+            color: #98a2b3;
+            font-size: 11px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        /* Mobile */
+        @media (max-width: 760px) {
+            body {
+                padding: 16px;
+            }
+
+            .auth-wrapper {
+                max-width: 470px;
+                min-height: auto;
+                grid-template-columns: 1fr;
+            }
+
+            .brand-panel {
+                min-height: 215px;
+                padding: 30px;
+            }
+
+            .brand-title {
+                margin-top: 34px;
+                font-size: 27px;
+            }
+
+            .brand-description,
+            .brand-footer {
+                display: none;
+            }
+
+            .form-panel {
+                padding: 34px 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="auth-wrapper">
+
+        <!-- Branding / information section -->
+        <section class="brand-panel">
+            <div class="brand-content">
+                <div class="logo">
+                    <span>SLA System</span>
+                </div>
+
+                <h1 class="brand-title">
+                    Welcome back to your workspace.
+                </h1>
+
+                <p class="brand-description">
+                    Sign in to access SLA reports, upload files, and manage your operational data securely.
+                </p>
+            </div>
+
+            <p class="brand-footer">
+                Internal Company System
+            </p>
+        </section>
+
+        <!-- Login form section -->
+        <section class="form-panel">
+            <div class="form-content">
+                <h2 class="form-title">Sign in</h2>
+
+                <p class="form-subtitle">
+                    Enter your account details to continue.
+                </p>
+
+                <!-- Later, action="/login" and method="post" -->
+                <form action="/login" method="post">
+
+                    <div class="field">
+                        <div class="field-header">
+                            <label for="username">Username</label>
+                        </div>
+
+                        <input
+                            id="username"
+                            name="username"
+                            type="text"
+                            placeholder="Enter your username"
+                            autocomplete="username"
+                            required
+                            value="{{ username | default('') }}"
+
+                        >
+                    </div>
+
+                    <div class="field">
+                        <div class="field-header">
+                            <label for="password">Password</label>
+                            
+                            
+                        </div>
+
+                        <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+                        <!-- Later: href="/forgot-password" -->
+                            <a href="/forgot-password" class="forgot-link">Forgot Password?</a>
+
+                                
+                            
+                    </div>
+                    {% if error_message %}
+                        <div class="login-error">
+                            {{ error_message }}
+                        </div>
+                    {% endif %}
+
+                    <button class="sign-in-button" type="submit">
+                        Sign In
+                    </button>
+                </form>
+                <p class="form-footer">
+                    Authorized users only. Your activity may be monitored.
+                </p>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SLA System - Migration Calculator</title>
+    
+    <!-- Jalali Datepicker Stylesheet -->
+    <link rel="stylesheet" href="https://unpkg.com/@majidh1/jalalidatepicker/dist/jalalidatepicker.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-color: #f3f4f6;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --card-bg: #ffffff;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        /* ===== Hamburger Button ===== */
+        .hamburger-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--card-bg);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            cursor: pointer;
+            color: var(--text-main);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+        }
+
+        .hamburger-btn:hover {
+            background: #eff6ff;
+            color: var(--primary-color);
+        }
+
+        /* ===== Overlay ===== */
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--card-bg);
+            z-index: 1002;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--primary-color);
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: #f1f5f9;
+            color: var(--text-main);
+        }
+
+        /* User Card */
+        .sidebar-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 16px;
+            padding: 14px;
+            background: #f8fafc;
+            border: 1px solid #eef2f7;
+            border-radius: 12px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #dbeafe;
+            color: var(--primary-color);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .user-meta {
+            display: flex;
+            align-items: center; /* تراز عمودی نام و بدج در یک خط */
+            gap: 8px; /* فاصله افقی بین اسم و بدج */
+            flex-wrap: wrap; /* در صورت کمبود جا می‌شکنه به خط بعد */
+            min-width: 0;
+            flex : 1;
+        }
+
+        .username {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .role-badge {
+            font-size: 10px;
+            text-transform: uppercase;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            letter-spacing: 0.5px;
+            width: fit-content;
+        }
+
+        .role-badge.admin {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .role-badge.user {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        /* Nav Items */
+        .sidebar-nav {
+            flex: 1;
+            padding: 8px 12px;
+            overflow-y: auto;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            color: #94a3b8;
+            margin: 14px 12px 6px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            color: #475569;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            margin-bottom: 2px;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover {
+            background: #f1f5f9;
+            color: var(--text-main);
+        }
+
+        .nav-item.active {
+            background: #eff6ff;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .nav-item.admin-item:hover {
+            background: #fffbeb;
+            color: #d97706;
+        }
+
+        /* Footer / Logout */
+        .sidebar-footer {
+            padding: 14px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .logout-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            color: var(--danger-color);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .logout-link:hover {
+            background: #fef2f2;
+        }
+
+        /* ===== Main Content ===== */
+        .main-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 5rem 1.5rem 2rem;
+        }
+
+        .dashboard-card {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 520px;
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .card-header h1 {
+            margin: 0;
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+        }
+
+        .card-header p {
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .datetime-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .datetime-row input[type="text"] {
+            flex: 2;
+        }
+
+        .datetime-row input[type="time"] {
+            flex: 1.2;
+            cursor: pointer;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.75rem;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            transition: all 0.2s;
+            background-color: #fff;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        input::placeholder {
+            color: #9ca3af;
+        }
+
+        /* Results Box */
+        .results-box {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 1.25rem;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+        }
+
+        .results-box.show {
+            display: block;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.25rem 0;
+            font-size: 0.95rem;
+        }
+
+        .result-label {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .result-val {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-size: 0.875rem;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            width: 100%;
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        @media (max-width: 640px) {
+            .sidebar {
+                width: 85%;
+                max-width: 300px;
+            }
+            .datetime-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Hamburger Toggle Button -->
+    <button class="hamburger-btn" id="sidebarToggle" aria-label="Open Menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </button>
+
+    <!-- Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar Menu -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="brand">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                    <line x1="9" y1="21" x2="9" y2="9"></line>
+                </svg>
+                SLA System
+            </div>
+            <button class="close-btn" id="sidebarClose" aria-label="Close Menu">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Logged-in User Info (Using current_user) -->
+        <div class="sidebar-user">
+            <div class="avatar">{{ current_user.username[:1]|upper }}</div>
+            <div class="user-meta">
+                <span class="username">{{ current_user.username }}</span>
+                {% if current_user.is_admin %}
+                    <span class="role-badge admin">Admin</span>
+                {% else %}
+                    <span class="role-badge user">Operator</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="sidebar-nav">
+            <div class="nav-section-title">Main Menu</div>
+
+            <a href="/" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+                Report Generator
+            </a>
+
+            <a href="/upload" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                Upload Data
+            </a>
+
+            <a href="/migration/sla-migration-calc" class="nav-item active">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                    <line x1="8" y1="6" x2="16" y2="6"></line>
+                    <line x1="16" y1="14" x2="16" y2="18"></line>
+                    <path d="M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M8 18h.01M12 18h.01"></path>
+                </svg>
+                Calculating The Timeframe
+            </a>
+
+            {% if current_user.is_admin %}
+                <div class="nav-section-title">Administration</div>
+                <a href="/admin/users" class="nav-item admin-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    User Management
+                </a>
+            
+                <a href="/admin/activity-logs" class="nav-item admin-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 20v-6M6 20V10M18 20V4"></path>
+                    </svg>
+                    Activity Logs
+                </a>
+            {% endif %}
+        </nav>
+
+        <!-- Sign Out -->
+        <div class="sidebar-footer">
+            <a href="/logout" class="logout-link">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Sign Out
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h1>Migration Calculator</h1>
+                <p>Calculate service migration outage & duration</p>
+            </div>
+
+            <form id="migrationCalcForm">
+                
+
+                <div class="form-group">
+                    <label>Migration Start (Date & Time)</label>
+                    <div class="datetime-row">
+                        <input type="text" id="start_date" name="start_date" placeholder="1405-01-01" data-jdp autocomplete="off" required>
+                        <input type="time" id="start_time" name="start_time" value="00:00" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Migration End (Date & Time)</label>
+                    <div class="datetime-row">
+                        <input type="text" id="end_date" name="end_date" placeholder="1405-01-01" data-jdp autocomplete="off" required>
+                        <input type="time" id="end_time" name="end_time" value="00:00" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Calculate Duration
+                </button>
+
+                <!-- Embedded Inline Results (Only Duration) -->
+                <div class="results-box" id="resultsBox">
+                    <div class="result-row">
+                        <span class="result-label">Duration:</span>
+                        <span class="result-val" id="readableDuration">-</span>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <div class="footer">
+        Internal Company System • Authorized Personnel Only
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 1. Sidebar Toggle Logic
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarClose = document.getElementById('sidebarClose');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+            function openSidebar() {
+                if (sidebar && sidebarOverlay) {
+                    sidebar.classList.add('open');
+                    sidebarOverlay.classList.add('show');
+                }
+            }
+
+            function closeSidebar() {
+                if (sidebar && sidebarOverlay) {
+                    sidebar.classList.remove('open');
+                    sidebarOverlay.classList.remove('show');
+                }
+            }
+
+            if (sidebarToggle) sidebarToggle.addEventListener('click', openSidebar);
+            if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
+            if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+
+            // 2. Jalali to Gregorian converter
+            function jalaliToGregorian(jy, jm, jd) {
+                let sal_a, gy, gm, gd, days;
+                jy += 1595;
+                days = -355668 + (365 * jy) + Math.floor((33 * jy + 3) / 134) + jd;
+                if (jm < 7) {
+                    days += (jm - 1) * 31;
+                } else {
+                    days += ((jm - 7) * 30) + 186;
+                }
+                gy = 400 * Math.floor(days / 146097);
+                days %= 146097;
+                if (days > 36524) {
+                    days--;
+                    gy += 100 * Math.floor(days / 36524);
+                    days %= 36524;
+                    if (days >= 365) days++;
+                }
+                gy += 4 * Math.floor(days / 1461);
+                days %= 1461;
+                if (days > 365) {
+                    gy += Math.floor((days - 1) / 365);
+                    days = (days - 1) % 365;
+                }
+                gd = days + 1;
+                sal_a = [0, 31, ((gy % 4 === 0 && gy % 100 !== 0) || (gy % 400 === 0)) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                for (gm = 1; gm <= 12; gm++) {
+                    if (gd <= sal_a[gm]) break;
+                    gd -= sal_a[gm];
+                }
+                return { gy, gm, gd };
+            }
+
+            function parseJalaliDateTime(dateStr, timeStr) {
+                if (!dateStr) return null;
+                const parts = dateStr.trim().split(/[-/]/).map(Number);
+                if (parts.length < 3) return null;
+
+                let hours = 0, minutes = 0;
+                if (timeStr) {
+                    const tParts = timeStr.trim().split(':').map(Number);
+                    hours = tParts[0] || 0;
+                    minutes = tParts[1] || 0;
+                }
+
+                const g = jalaliToGregorian(parts[0], parts[1], parts[2]);
+                return new Date(g.gy, g.gm - 1, g.gd, hours, minutes, 0);
+            }
+
+            // 3. Form Calculation
+            const calcForm = document.getElementById('migrationCalcForm');
+            const resultsBox = document.getElementById('resultsBox');
+            const readableDuration = document.getElementById('readableDuration');
+
+            if (calcForm) {
+                calcForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    const startDateStr = document.getElementById('start_date').value;
+                    const startTimeStr = document.getElementById('start_time').value;
+                    const endDateStr = document.getElementById('end_date').value;
+                    const endTimeStr = document.getElementById('end_time').value;
+
+                    const startDate = parseJalaliDateTime(startDateStr, startTimeStr);
+                    const endDate = parseJalaliDateTime(endDateStr, endTimeStr);
+
+                    if (!startDate || !endDate) {
+                        alert('Please enter valid dates.');
+                        return;
+                    }
+
+                    const diffMs = endDate - startDate;
+                    if (diffMs < 0) {
+                        alert('End time cannot be earlier than start time!');
+                        return;
+                    }
+
+                    const diffMins = Math.floor(diffMs / (1000 * 60));
+                    const hours = Math.floor(diffMins / 60);
+                    const mins = diffMins % 60;
+
+                    readableDuration.textContent = `${hours}h ${mins}m`;
+                    resultsBox.classList.add('show');
+                });
+            }
+        });
+    </script>
+
+    <!-- Jalali Datepicker Library -->
+    <script src="https://unpkg.com/@majidh1/jalalidatepicker/dist/jalalidatepicker.min.js"></script>
+    <script>
+        jalaliDatepicker.startWatch({
+            minDate: "attr",
+            maxDate: "attr",
+            separatorChars: {
+                date: "-"
+            }
+        });
+    </script>
+</body>
+</html>

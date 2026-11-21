@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>SLA System - Your Account Details</title>
+    <style>
+        /* استایل‌های عمومی */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8fafc; /* رنگ پس‌زمینه بسیار روشن */
+            margin: 0;
+            padding: 24px;
+            color: #475569; /* رنگ متن اصلی */
+        }
+
+        /* کارت اصلی ایمیل */
+        .card {
+            background: #ffffff; /* پس‌زمینه سفید */
+            max-width: 480px; /* حداکثر عرض کارت */
+            margin: auto; /* وسط‌چین کردن کارت */
+            padding: 28px;
+            border-radius: 12px; /* گوشه‌های گرد */
+            border: 1px solid #e2e8f0; /* حاشیه نازک خاکستری */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); /* سایه ملایم */
+        }
+
+        /* برند یا لوگوی سیستم */
+        .brand {
+            color: #2563eb; /* رنگ آبی اصلی */
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px; /* فاصله بین آیکون و متن */
+        }
+        .brand::before { /* می‌توانی اینجا یک آیکون کوچک هم اضافه کنی */
+            content: '🚀'; /* مثال: آیکون موشک */
+        }
+
+        /* عنوان اصلی */
+        h2 {
+            color: #0f172a; /* رنگ تیره برای عنوان */
+            font-size: 20px;
+            margin: 0 0 12px 0;
+        }
+
+        /* پاراگراف‌های متن */
+        p {
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 0 0 16px 0;
+        }
+
+        /* ناحیه نمایش مشخصات کاربر */
+        .credentials {
+            background: #f1f5f9; /* پس‌زمینه روشن‌تر برای این بخش */
+            border-left: 4px solid #2563eb; /* نوار آبی سمت چپ */
+            padding: 14px 16px;
+            border-radius: 6px;
+            margin: 20px 0;
+            display: flex; /* برای چیدمان سطرها */
+            flex-direction: column; /* سطرها زیر هم */
+            gap: 8px; /* فاصله بین سطرها */
+        }
+
+        .cred-row {
+            font-size: 13px;
+            display: flex; /* برای تراز کردن لیبل و مقدار */
+            align-items: baseline;
+        }
+
+        .label {
+            color: #64748b; /* رنگ خاکستری برای لیبل‌ها */
+            font-weight: 600;
+            width: 90px; /* عرض ثابت برای لیبل‌ها */
+            flex-shrink: 0; /* جلوگیری از کوچک شدن */
+        }
+
+        .value {
+            color: #0f172a; /* رنگ تیره برای مقادیر */
+            font-weight: 700;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; /* فونت monospace */
+            font-size: 14px;
+            word-break: break-all; /* شکستن کلمات طولانی */
+        }
+
+        /* متن فوتر */
+        .footer-text {
+            font-size: 12px;
+            color: #94a3b8; /* رنگ روشن‌تر برای فوتر */
+            margin-top: 24px;
+            border-top: 1px solid #f1f5f9; /* خط جداکننده */
+            padding-top: 14px;
+            text-align: center;
+        }
+        
+        /* دکمه یا لینک */
+        .action-button {
+            display: inline-block;
+            background-color: #2563eb;
+            color: #ffffff;
+            padding: 10px 18px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .action-button:hover {
+            background-color: #1d4ed8;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="brand">SLA System</div>
+        
+        <h2>Welcome aboard!</h2>
+        <p>Your account has been created by the system administrator. Here are your login details:</p>
+        
+        <div class="credentials">
+            <div class="cred-row">
+                <span class="label">Username:</span> 
+                <span class="value">{username}</span>
+            </div>
+            <div class="cred-row">
+                <span class="label">Password:</span> 
+                <span class="value">{temp_password}</span>
+            </div>
+            <div class="cred-row">
+                <span class="label">Role:</span> 
+                <span class="value">{role_title}</span>
+            </div>
+        </div>
+
+        <p>
+            You can change your password anytime using the <strong>Forgot Password</strong> option on the login page.
+        </p>
+        
+        <!-- مثال: اضافه کردن یک دکمه برای رفتن به صفحه لاگین -->
+        <a href="http://your-app-url.com/login" class="action-button">Go to Login</a>
+
+        <div class="footer-text">
+            Internal SLA System • Automated Notification
+        </div>
+    </div>
+</body>
+</html>

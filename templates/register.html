@@ -1,0 +1,189 @@
+<!-- register.html (نسخه اصلاح‌شده برای حذف اسکرول) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SLA | Create Account</title>
+
+  <style>
+    :root{
+      --primary:#2563eb;
+      --primary-dark:#1d4ed8;
+      --background:#f3f6fb;
+      --card:#ffffff;
+      --text-main:#172033;
+      --text-muted:#718096;
+      --border:#dce3ee;
+      --input-bg:#f9fbfe;
+      --danger:#dc2626;
+      --success:#16a34a;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Tahoma,Arial,sans-serif}
+    body{
+      min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+      background:
+        radial-gradient(circle at top left,#dbeafe 0%,transparent 35%),
+        radial-gradient(circle at bottom right,#e0e7ff 0%,transparent 30%),
+        var(--background);
+      color:var(--text-main);
+    }
+    /* ارتفاع کلی کارت کاهش یافت: 620px -> 580px */
+    .auth-wrapper{
+      width:100%;max-width:800px;min-height:580px;display:grid;grid-template-columns:1fr 1fr;
+      overflow:hidden;border:1px solid rgba(220,227,238,.9);border-radius:22px;background:var(--card);
+      box-shadow:0 22px 55px rgba(32,53,88,.16);
+    }
+    /* پدینگ پنل برندینگ کاهش یافت: 52px -> 40px */
+    .brand-panel{
+      position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:40px;
+      overflow:hidden;color:#fff;
+      background:linear-gradient(145deg,#1d4ed8,#1e40af 58%,#2563eb);
+    }
+    .brand-panel::before,.brand-panel::after{position:absolute;border-radius:50%;content:"";opacity:.16;background:#fff}
+    .brand-panel::before{width:340px;height:340px;top:-170px;right:-120px}
+    .brand-panel::after{width:260px;height:260px;bottom:-150px;left:-100px}
+    .brand-content,.brand-footer{position:relative;z-index:1}
+    .logo{display:inline-flex;align-items:center;gap:10px;font-size:20px;font-weight:750;letter-spacing:.4px}
+    .logo-icon{
+      width:34px;height:34px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.35);
+      border-radius:8px;font-size:16px;background:rgba(255,255,255,.14)
+    }
+    /* سایز فونت عنوان اصلی و حاشیه آن کاهش یافت: 38px -> 32px, 92px -> 60px */
+    .brand-title{max-width:330px;margin-top:60px;font-size:32px;line-height:1.2;letter-spacing:-.8px}
+    .brand-description{max-width:330px;margin-top:14px;color:rgba(255,255,255,.78);font-size:14px;line-height:1.7}
+    .brand-footer{color:rgba(255,255,255,.63);font-size:12px}
+
+    /* پدینگ پنل فرم کاهش یافت: 52px 58px -> 40px 48px */
+    .form-panel{display:flex;align-items:center;padding:40px 48px;background:#fff}
+    .form-content{width:100%}
+    .form-title{font-size:28px;font-weight:750;letter-spacing:-.6px}
+    .form-subtitle{margin-top:8px;color:var(--text-muted);font-size:13px;line-height:1.6}
+    form{margin-top:24px} /* حاشیه فرم کاهش یافت: 28px -> 24px */
+    .field{margin-bottom:16px} /* حاشیه بین فیلدها کاهش یافت: 18px -> 16px */
+    .field-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px} /* حاشیه بین لیبل و اینپوت کاهش یافت: 8px -> 6px */
+    label{color:#344054;font-size:12px;font-weight:650}
+    /* ارتفاع اینپوت کاهش یافت: 48px -> 44px */
+    input{
+      width:100%;height:44px;padding:0 14px;border:1px solid var(--border);border-radius:10px;outline:none;
+      color:var(--text-main);font-size:13px;background:var(--input-bg);
+      transition:border-color .2s, box-shadow .2s, background .2s;
+    }
+    input::placeholder{color:#a0aec0}
+    input:focus{
+      border-color:var(--primary);background:#fff;box-shadow:0 0 0 4px rgba(37,99,235,.12)
+    }
+
+    /* ارتفاع دکمه اصلی کاهش یافت: 50px -> 46px */
+    .primary-btn{
+      width:100%;height:46px;margin-top:4px;border:none;border-radius:10px;cursor:pointer;color:#fff;
+      font-size:14px;font-weight:700;background:var(--primary);
+      transition:transform .18s, background .18s, box-shadow .18s;
+    }
+    .primary-btn:hover{background:var(--primary-dark);box-shadow:0 10px 20px rgba(37,99,235,.25);transform:translateY(-1px)}
+    .secondary-link{
+      display:block;margin-top:14px;text-align:center;text-decoration:none; /* حاشیه بالا کاهش یافت: 16px -> 14px */
+      color:var(--primary);font-size:12px;font-weight:700;
+    }
+    .secondary-link:hover{text-decoration:underline}
+
+    .hint-box{
+      margin-top:18px;padding:12px;border:1px solid #e3eaf5;border-radius:10px;background:#f8faff; /* حاشیه و پدینگ کاهش یافت */
+      color:var(--text-muted);font-size:11px;line-height:1.6;
+    }
+
+    @media (max-width:760px){
+      body{padding:16px}
+      /* در نمای موبایل، ارتفاع ثابت حذف می‌شود تا اسکرول در این حالت مشکلی ایجاد نکند */
+      .auth-wrapper{max-width:470px;min-height:auto;grid-template-columns:1fr}
+      .brand-panel{min-height:180px;padding:30px}
+      .brand-title{margin-top:30px;font-size:24px}
+      .brand-description,.brand-footer{display:none}
+      .form-panel{padding:34px 28px}
+    }
+  </style>
+</head>
+
+<body>
+  <main class="auth-wrapper">
+    <section class="brand-panel">
+      <div class="brand-content">
+        <div class="logo">
+          <div class="logo-icon">S</div>
+          <span>SLA System</span>
+        </div>
+
+        <h1 class="brand-title">Create your account.</h1>
+        <p class="brand-description">
+          Register to access SLA reports, upload files, and manage your operational data securely.
+        </p>
+      </div>
+
+      <p class="brand-footer">Internal Company System</p>
+    </section>
+
+    <section class="form-panel">
+      <div class="form-content">
+        <h2 class="form-title">Create Account</h2>
+        <p class="form-subtitle">Fill in the details below to get started.</p>
+
+        <!-- Later: action="/register" method="post" -->
+                        <!-- نمایش پیام خطا در صورت وجود -->
+        {% if error_message %}
+          <div class="login-error" style="color: #ff4d4d; margin-bottom: 15px; font-size: 0.9rem;">
+            {{ error_message }}
+          </div>
+        {% endif %}
+
+        <form action="/register" method="post">
+          <div class="field">
+            <div class="field-header">
+              <label for="username">Username</label>
+            </div>
+            <input id="username" name="username" type="text"
+                   value="{{ username | default('') }}"
+                   placeholder="Choose a username" autocomplete="username" required />
+          </div>
+
+          <div class="field">
+            <div class="field-header">
+              <!-- حذف (optional) و اجباری کردن فیلد -->
+              <label for="email">Email</label>
+            </div>
+            <input id="email" name="email" type="email"
+                   value="{{ email | default('') }}"
+                   placeholder="name@gmail.com" autocomplete="email" required />
+          </div>
+
+          <div class="field">
+            <div class="field-header">
+              <label for="password">Password</label>
+            </div>
+            <input id="password" name="password" type="password"
+                   placeholder="Create a strong password" autocomplete="new-password" required />
+          </div>
+
+          <div class="field">
+            <div class="field-header">
+              <label for="confirm_password">Confirm Password</label>
+            </div>
+            <input id="confirm_password" name="confirm_password" type="password"
+                   placeholder="Repeat your password" autocomplete="new-password" required />
+          </div>
+
+          <button class="primary-btn" type="submit">Create Account</button>
+
+          <!-- تصحیح لینک بازگشت به صفحه لاگین -->
+          <a class="secondary-link" href="/login">Back to Sign In</a>
+        </form>
+
+
+
+        <div class="hint-box">
+          Tip: Use a unique password. Never share your credentials with anyone.
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
